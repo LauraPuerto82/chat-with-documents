@@ -1,5 +1,6 @@
-  langchain
-  langchain-google-genai
-  chromadb
-  pypdf
-  python-docx
+langchain
+langchain-google-genai
+chromadb
+pypdf
+python-docx
+odfpy
