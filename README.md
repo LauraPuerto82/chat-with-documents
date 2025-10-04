@@ -28,7 +28,7 @@ This application scans documents in a specified directory (and its subdirectorie
    ```
 4. Set up your API keys (create a `.env` file):
    ```
-   OPENAI_API_KEY=your_key_here
+   GEMINI_API_KEY=your_key_here
    ```
 
 ## Usage

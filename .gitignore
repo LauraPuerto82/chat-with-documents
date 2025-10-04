@@ -56,3 +56,7 @@ Thumbs.db
 .env
 .env.local
 design.txt
+data
+
+# helper files
+chroma_example.py
