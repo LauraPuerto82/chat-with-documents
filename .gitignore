@@ -57,6 +57,7 @@ Thumbs.db
 .env.local
 design.txt
 data
+vectordb/
 
 # helper files
 chroma_example.py
