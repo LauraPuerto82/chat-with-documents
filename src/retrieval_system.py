@@ -1,6 +1,3 @@
-import chromadb
-
-
 def query_documents(collection, query_text, n_results=5):
     """
     Query the vector database for relevant document chunks.
@@ -18,6 +15,8 @@ def query_documents(collection, query_text, n_results=5):
 
 
 if __name__ == "__main__":
+    import chromadb
+
     chroma_client = chromadb.PersistentClient(path="./vectordb")
     collection = chroma_client.get_or_create_collection(name="my_documents")
 

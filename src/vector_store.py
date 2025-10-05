@@ -5,6 +5,16 @@ from langchain.schema import Document
 
 
 def chunk_text(text, file):
+    """
+    Split text into smaller chunks with metadata for vector storage.
+
+    Args:
+        text (str): The text content to be split into chunks.
+        file (str): The source file path to be stored in metadata.
+
+    Returns:
+        list[Document]: List of Document objects containing chunked text with metadata.
+    """
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
         chunk_overlap=50,
@@ -22,13 +32,28 @@ def chunk_text(text, file):
 
 
 def create_collection():
+    """
+    Create or retrieve a ChromaDB collection for document storage.
+
+    Returns:
+        chromadb.Collection: The ChromaDB collection named 'my_documents'.
+    """
     chroma_client = chromadb.PersistentClient(path="./vectordb")
     collection = chroma_client.get_or_create_collection(name="my_documents")
     return collection
 
 
 def add_chunks(chunks, collection):
+    """
+    Add document chunks to a ChromaDB collection.
 
+    Args:
+        chunks (list[Document]): List of Document objects to add to the collection.
+        collection (chromadb.Collection): The ChromaDB collection to add chunks to.
+
+    Returns:
+        chromadb.Collection: The updated collection with new chunks.
+    """
     collection.upsert(
         documents=[doc.page_content for doc in chunks],
         ids=[str(uuid.uuid4()) for _ in chunks],
