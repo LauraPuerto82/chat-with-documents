@@ -15,4 +15,5 @@ for file in files:
     content = fn(file)
 
     chunks = chunk_text(content, file)
-    collection = add_chunks(chunks, collection)
+    if chunks:
+        collection = add_chunks(chunks, collection)
