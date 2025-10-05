@@ -24,8 +24,11 @@ def chunk_text(text, file):
     chunks = splitter.split_text(text)
 
     docs = [
-        Document(page_content=c, metadata={"source": file, "chunk": i})
-        for i, c in enumerate(chunks)
+        Document(
+            page_content=f"[Source: {file}]\n\n{content}",
+            metadata={"source": file, "chunk": index},
+        )
+        for index, content in enumerate(chunks)
     ]
 
     return docs
@@ -61,6 +64,33 @@ def add_chunks(chunks, collection):
     )
 
     return collection
+
+
+def create_file_index_chunk(files):
+    """
+    Create document chunks from a list of indexed file paths.
+
+    Args:
+        files (list[str]): List of file paths that were indexed.
+
+    Returns:
+        list[Document]: List of Document objects containing file index information.
+    """
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50,
+        separators=["\n\n", "\n", " ", ""],
+    )
+
+    text = "The following files were indexed:\n" + "\n".join(files)
+    chunks = splitter.split_text(text)
+
+    docs = [
+        Document(page_content=c, metadata={"source": "indexing files", "chunk": i})
+        for i, c in enumerate(chunks)
+    ]
+
+    return docs
 
 
 if __name__ == "__main__":
