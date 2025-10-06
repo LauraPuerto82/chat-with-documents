@@ -15,9 +15,16 @@ from retrieval_system import query_documents
 # Map file extensions to their corresponding loader functions
 loaders = {".txt": load_txt, ".pdf": load_pdf, ".docx": load_docx, ".odt": load_odt}
 
+directory = input("Enter directory to scan (default: data): ").strip()
+if not directory:
+    directory = "data"
+elif not os.path.isdir(directory):
+    print(f"Directory '{directory}' not found. Using default 'data' instead.")
+    directory = "data"
+
 # Initialize: scan for documents and create vector database collection
-files = scan_folders()
-collection = create_collection()
+files = scan_folders(directory)
+collection = create_collection(directory)
 
 # Process each document: load, chunk, and add to vector store
 for file in files:
@@ -38,6 +45,7 @@ print(time.strftime("%b %d, %Y %H:%M:%S"))
 # Set up the language model and initialize empty chat history
 llm = set_llm()
 history = []
+
 
 # Main chat loop: retrieve relevant chunks, generate answers, and maintain conversation history
 while True:

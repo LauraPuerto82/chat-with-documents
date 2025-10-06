@@ -1,7 +1,10 @@
 import chromadb
-import uuid
+import hashlib
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document
+
+from utils import sanitize_filename
 
 
 def chunk_text(text, file):
@@ -34,15 +37,16 @@ def chunk_text(text, file):
     return docs
 
 
-def create_collection():
+def create_collection(path):
     """
     Create or retrieve a ChromaDB collection for document storage.
 
     Returns:
-        chromadb.Collection: The ChromaDB collection named 'my_documents'.
+        chromadb.Collection: The ChromaDB collection named after the sanitized path.
     """
+    name = sanitize_filename(path)
     chroma_client = chromadb.PersistentClient(path="./vectordb")
-    collection = chroma_client.get_or_create_collection(name="my_documents")
+    collection = chroma_client.get_or_create_collection(name=name)
     return collection
 
 
@@ -59,7 +63,12 @@ def add_chunks(chunks, collection):
     """
     collection.upsert(
         documents=[doc.page_content for doc in chunks],
-        ids=[str(uuid.uuid4()) for _ in chunks],
+        # Generate deterministic IDs using MD5 hash of source+index
+        # This ensures same document chunks get same ID, preventing duplicates on re-indexing
+        ids=[
+            hashlib.md5(f"{doc.metadata['source']}-{i}".encode()).hexdigest()
+            for i, doc in enumerate(chunks)
+        ],
         metadatas=[doc.metadata for doc in chunks],
     )
 
@@ -104,7 +113,7 @@ if __name__ == "__main__":
         print(chunk)
         print()
 
-    collection = create_collection()
+    collection = create_collection("data/dir2")
     collection = add_chunks(chunks, collection)
 
     results = collection.peek(5)  # Shows first 5 items
