@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import sys
 
 from langchain_google_genai import GoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -18,11 +19,16 @@ def set_llm():
     """
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+    if not GEMINI_API_KEY:
+        print("GEMINI_API_KEY not found. Please set it in your .env file.")
+        sys.exit(1)
+
     llm = GoogleGenerativeAI(
         model="gemini-2.5-flash",
         google_api_key=GEMINI_API_KEY,
         temperature=0.2,
     )
+
     return llm
 
 
@@ -39,8 +45,12 @@ def generate_answer(llm, user_input, chunks, history):
     Returns:
         str: The generated answer from the LLM.
     """
-    with open("prompts/system.txt", "r", encoding="utf-8") as file:
-        system_prompt = file.read()
+    try:
+        with open("prompts/system.txt", "r", encoding="utf-8") as file:
+            system_prompt = file.read()
+    except FileNotFoundError:
+        print("Error: Required system configuration file missing.")
+        sys.exit(1)
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -52,9 +62,16 @@ def generate_answer(llm, user_input, chunks, history):
 
     chain = prompt | llm | StrOutputParser()
 
-    answer = chain.invoke(
-        {"user_input": user_input, "chunks": chunks, "history": history}
-    )
+    try:
+        answer = chain.invoke(
+            {"user_input": user_input, "chunks": chunks, "history": history}
+        )
+    except Exception:
+        print("Error calling Gemini API. This may be due to:")
+        print("- Invalid GEMINI_API_KEY in your .env file")
+        print("- Network connection issues")
+        print("- API rate limits")
+        sys.exit(1)
 
     return answer
 

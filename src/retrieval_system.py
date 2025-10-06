@@ -23,8 +23,8 @@ if __name__ == "__main__":
     results = query_documents(
         collection=collection, query_text="docx files", n_results=1
     )
-
-    for i, query_results in enumerate(results["documents"]):
-        print("\n".join(query_results))
-        print("\n--- Metadata ---")
-        print(results["metadatas"][i])
+    if results and results["documents"] and results["metadatas"]:
+        for i, query_results in enumerate(results["documents"]):
+            print("\n".join(query_results))
+            print("\n--- Metadata ---")
+            print(results["metadatas"][i])

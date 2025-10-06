@@ -9,7 +9,7 @@ This application scans documents in a specified directory (and its subdirectorie
 ## Features
 
 - **Recursive Document Discovery**: Automatically scans current directory and all subdirectories
-- **Multi-Format Support**: Works with PDF, TXT, DOCX, MD, and other document formats
+- **Multi-Format Support**: Works with PDF, TXT, DOCX, ODT, and other document formats
 - **Vector-Based Search**: Uses semantic search to find relevant content
 - **Natural Language Interface**: Ask questions in plain English
 - **Source Citations**: Responses include references to source documents
@@ -34,7 +34,7 @@ This application scans documents in a specified directory (and its subdirectorie
 ## Usage
 
 ```bash
-python main.py
+python src/cli.py
 ```
 
 Then simply type your questions about the documents in the indexed directory.
