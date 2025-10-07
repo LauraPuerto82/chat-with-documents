@@ -9,10 +9,21 @@ This application scans documents in a specified directory (and its subdirectorie
 ## Features
 
 - **Recursive Document Discovery**: Automatically scans current directory and all subdirectories
-- **Multi-Format Support**: Works with PDF, TXT, DOCX, ODT, and other document formats
+- **Multi-Format Support**: Works with PDF, TXT, DOCX, ODT. Other document formats will be added
 - **Vector-Based Search**: Uses semantic search to find relevant content
 - **Natural Language Interface**: Ask questions in plain English
+- **Conversation History**: Maintains context across multiple questions for follow-up queries
 - **Source Citations**: Responses include references to source documents
+- **Comprehensive Test Suite**: 47 automated tests with 100% pass rate
+
+## Technologies Used
+
+- **LLM**: Google Gemini 2.5 Flash
+- **Vector Database**: ChromaDB
+- **Embeddings**: ChromaDB default embeddings
+- **Framework**: LangChain
+- **Document Processing**: PyPDF, python-docx, odfpy
+- **Testing**: pytest with fixtures
 
 ## Installation
 
@@ -37,7 +48,17 @@ This application scans documents in a specified directory (and its subdirectorie
 python src/cli.py
 ```
 
-Then simply type your questions about the documents in the indexed directory.
+Example interaction:
+```
+Enter directory to scan (default: data): data
+Directory used: 'data'
+Oct 07, 2025 14:30:15
+
+Ask a question (or type 'exit' to quit): What are the main topics covered in the documents?
+Based on the documents, the main topics include...
+
+Ask a question (or type 'exit' to quit): exit
+```
 
 ## Project Structure
 
@@ -45,10 +66,24 @@ Then simply type your questions about the documents in the indexed directory.
 Chat with documents/
 ├── README.md
 ├── requirements.txt
-├── design.txt           # Detailed design specification
-├── src/                 # Source code
-├── data/                # Document storage
-└── tests/               # Test files
+├── pytest.ini                  # Test configuration
+├── .env.example               # Environment variables template
+├── src/                       # Source code
+│   ├── cli.py                # Main CLI application
+│   ├── document_loader.py    # Document loading functions
+│   ├── scan_folders.py       # Directory scanning
+│   ├── vector_store.py       # Vector database operations
+│   ├── retrieval_system.py   # Semantic search
+│   ├── response_generator.py # LLM integration
+│   └── utils.py              # Utility functions
+├── tests/                     # Test suite (47 tests)
+│   ├── test_utils.py
+│   ├── test_scan_folders.py
+│   ├── test_document_loader.py
+│   └── test_vector_store.py
+├── prompts/                   # LLM prompts
+│   └── system.txt
+└── data/                      # Your documents (not tracked)
 ```
 
 ## How It Works
@@ -59,13 +94,43 @@ Chat with documents/
 4. **Generation**: LLM generates a response using the retrieved context
 5. **Response**: Answer is displayed with source references
 
+## Testing
+
+The project includes a comprehensive test suite with 47 automated tests covering core functionality.
+
+### Running Tests
+
+```bash
+# Activate virtual environment
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Mac/Linux
+
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_utils.py
+
+# Run with coverage report (optional)
+pytest --cov=src
+```
+
+### Test Coverage
+
+- **Document Loading**: Tests for TXT, PDF, DOCX, ODT formats with error handling
+- **Directory Scanning**: Tests for recursive scanning, nested directories, and edge cases
+- **Text Chunking**: Tests for document splitting, metadata generation, and indexing
+- **Utility Functions**: Tests for filename sanitization and validation
+
+All tests use pytest fixtures for isolated, repeatable testing with automatic cleanup.
+
 ## Future Enhancements
 
 - Real-time document monitoring and re-indexing
 - Multi-language support
-- Conversation history and follow-up questions
 - Export chat transcripts
 - Web-based UI
+- Support for additional document formats (Markdown, HTML, CSV)
 
 ## Contributing
 

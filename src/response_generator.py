@@ -95,24 +95,3 @@ def set_history(history, query, answer):
     history.append(AIMessage(answer))
 
     return history
-
-
-if __name__ == "__main__":
-    import chromadb
-    from retrieval_system import query_documents
-
-    chroma_client = chromadb.PersistentClient(path="./vectordb")
-    collection = chroma_client.get_or_create_collection(name="my_documents")
-
-    query = "docx files"
-    history = []
-
-    results = query_documents(collection=collection, query_text=query, n_results=1)
-
-    llm = set_llm()
-
-    answer = generate_answer(llm=llm, user_input=query, chunks=results, history=history)
-    history = set_history(history, query, answer)
-
-    for item in history:
-        print(item.content)

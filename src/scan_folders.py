@@ -15,15 +15,9 @@ def scan_folders(directory="data"):
     try:
         pattern = os.path.join(directory, "**", "*")
         files = [
-            file
-            for file in glob.glob(pattern, recursive=True)
-            if os.path.isfile(file)
+            file for file in glob.glob(pattern, recursive=True) if os.path.isfile(file)
         ]
         return files
     except PermissionError:
         print(f"Permission denied accessing directory '{directory}'.")
         return []
-
-
-if __name__ == "__main__":
-    print(scan_folders())

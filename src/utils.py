@@ -26,10 +26,38 @@ def sanitize_filename(filename: str) -> str:
     if not isinstance(filename, str):
         raise TypeError("filename must be a string")
 
-    # Replace invalid characters with underscores
-    sanitized_name = re.sub(r"[^a-zA-Z0-9_\.]", "_", filename)
+    # Handle empty string
+    if not filename:
+        return filename
 
-    # Remove leading and trailing underscores
+    # Preserve leading dot for dotfiles (e.g., .gitignore)
+    leading_dot = ""
+    if filename.startswith("."):
+        leading_dot = "."
+        filename = filename[1:]
+
+    # Split into name and extension
+    if "." in filename:
+        parts = filename.rsplit(".", 1)
+        name, extension = parts[0], parts[1]
+    else:
+        name, extension = filename, ""
+
+    # Sanitize the name part: replace invalid chars with underscores
+    sanitized_name = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+    # Collapse multiple underscores into one
+    sanitized_name = re.sub(r"_+", "_", sanitized_name)
+    # Remove leading/trailing underscores from name
     sanitized_name = sanitized_name.strip("_")
 
-    return sanitized_name
+    # Sanitize extension: only allow alphanumeric characters
+    sanitized_extension = re.sub(r"[^a-zA-Z0-9]", "", extension)
+
+    # Reconstruct filename
+    if sanitized_extension:
+        result = f"{sanitized_name}.{sanitized_extension}"
+    else:
+        result = sanitized_name
+
+    # Add back leading dot if present
+    return leading_dot + result

@@ -97,17 +97,3 @@ def load_odt(filepath):
     except Exception:
         print("An unexpected error occurred while trying to read the file.")
     return ""
-
-
-if __name__ == "__main__":
-    print("---TXT---")
-    print(load_txt("data/test.txt"))
-    print("\n" * 2)
-    print("---PDF---")
-    print(load_pdf("data/test.pdf"))
-    print("\n" * 2)
-    print("---DOCX---")
-    print(load_docx("data/test.docx"))
-    print("\n" * 2)
-    print("---ODT---")
-    print(load_odt("data/test.odt"))

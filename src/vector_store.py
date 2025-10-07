@@ -100,22 +100,3 @@ def create_file_index_chunk(files):
     ]
 
     return docs
-
-
-if __name__ == "__main__":
-    with open("tests/text.txt", "r") as file:
-        text = file.read()
-
-    chunks = chunk_text(text, "tests/text.txt")
-
-    print(len(chunks), "chunks")
-    for chunk in chunks:
-        print(chunk)
-        print()
-
-    collection = create_collection("data/dir2")
-    collection = add_chunks(chunks, collection)
-
-    results = collection.peek(5)  # Shows first 5 items
-    print("\nFirst few items in collection:")
-    print(results)

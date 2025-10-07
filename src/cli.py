@@ -82,7 +82,7 @@ history = []
 
 # Main chat loop: handle user queries with RAG-based responses
 while True:
-    user_input = input("Type a question or exit for exit the program: ")
+    user_input = input("Ask a question (or type 'exit' to quit): ")
 
     if user_input.lower() == "exit":
         break
