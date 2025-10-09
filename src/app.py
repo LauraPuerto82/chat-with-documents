@@ -10,9 +10,6 @@ import time
 
 import streamlit as st
 
-import tkinter as tk
-from tkinter import filedialog
-
 from document_loader import load_txt, load_pdf, load_docx, load_odt
 from scan_folders import scan_folders
 from vector_store import (
@@ -35,29 +32,41 @@ loaders = {".txt": load_txt, ".pdf": load_pdf, ".docx": load_docx, ".odt": load_
 # Helper Functions
 # ============================================================================
 
+
 def render_sidebar():
     """
     Render the sidebar with document settings and controls.
 
-    Handles folder selection, displays current folder info, and provides
+    Handles folder path input, displays current folder info, and provides
     chat history clearing functionality.
     """
     with st.sidebar:
         st.title("📁 Document Settings")
 
-        # Button to select folder containing documents
-        if st.button("Select Folder", use_container_width=True):
-            folder_path = select_folder()
-            if folder_path:
+        # Input field for folder path
+        folder_path = st.text_input(
+            "Enter folder path:",
+            placeholder="C:/Users/YourName/Documents or /home/user/docs",
+            help="Enter the full path to your documents folder",
+        )
+
+        if st.button("Load Folder", use_container_width=True):
+            if folder_path and os.path.exists(folder_path):
                 st.session_state.folder_path = folder_path
                 # Clear collection to trigger re-indexing
                 if "collection" in st.session_state:
                     del st.session_state.collection
                 if "files" in st.session_state:
                     del st.session_state.files
+                st.rerun()
+            elif folder_path:
+                st.error("Folder not found. Please check the path.")
+                if "files" in st.session_state:
+                    del st.session_state.files
+                if "folder_path" in st.session_state:
+                    del st.session_state.folder_path
             else:
-                st.info("No folder selected")
-            st.rerun()
+                st.info("Please enter a folder path")
 
         # Show current folder if selected
         if "folder_path" in st.session_state:
@@ -74,21 +83,6 @@ def render_sidebar():
         if st.button("🗑️ Clear Chat History", use_container_width=True):
             st.session_state.messages = []
             st.rerun()
-
-
-def select_folder():
-    """
-    Open a folder selection dialog using tkinter.
-
-    Returns:
-        str: The selected folder path, or empty string if cancelled.
-    """
-    root = tk.Tk()
-    root.withdraw()  # Hide the main tkinter window
-    root.wm_attributes("-topmost", 1)  # Keep dialog on top
-    folder_path = filedialog.askdirectory(parent=root)
-    root.destroy()
-    return folder_path
 
 
 def initialize_vector_store(folder_path, files):

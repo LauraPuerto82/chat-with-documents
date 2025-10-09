@@ -4,12 +4,12 @@ An AI-powered web application that enables conversational interaction with your 
 
 ## Overview
 
-This application provides a user-friendly web interface to chat with your documents. Select a folder through the built-in file dialog, and the app will automatically index all supported documents. You can then ask questions about the content and receive AI-generated answers based on the document context, with full conversation history support.
+This application provides a user-friendly web interface to chat with your documents. Enter a folder path in the sidebar, and the app will automatically index all supported documents. You can then ask questions about the content and receive AI-generated answers based on the document context, with full conversation history support.
 
 ## Features
 
 - **Web-Based UI**: Clean, intuitive Streamlit interface with chat functionality
-- **Folder Selection Dialog**: Easy folder browsing using system file picker
+- **Folder Path Input**: Easy folder selection via text input with path validation
 - **Recursive Document Discovery**: Automatically scans selected directory and all subdirectories
 - **Multi-Format Support**: Works with PDF, TXT, DOCX, ODT. Other document formats will be added
 - **Progress Tracking**: Visual progress bar during document indexing
@@ -61,7 +61,7 @@ The application will open in your default web browser at `http://localhost:8501`
 
 ### Using the Interface
 
-1. **Select a Folder**: Click the "Select Folder" button in the sidebar to choose a directory containing your documents
+1. **Enter Folder Path**: Type or paste the full path to your documents folder in the sidebar text input, then click "Load Folder"
 2. **Wait for Indexing**: The app will automatically scan and index all supported documents (shows progress bar)
 3. **Start Chatting**: Once indexing is complete, type your questions in the chat input at the bottom
 4. **View Responses**: The AI will provide answers based on your documents, including source references
