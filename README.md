@@ -76,6 +76,10 @@ A CLI version is also available:
 python src/cli.py
 ```
 
+### Cloud Deployment Note
+
+When deployed on cloud platforms (Streamlit Cloud, Heroku, etc.), the indexed documents are stored in ephemeral storage and will be cleared when the app restarts. Users will need to re-enter their folder path and re-index documents each session. This typically takes only a few seconds and is not a significant limitation for most use cases.
+
 ## Project Structure
 
 ```
