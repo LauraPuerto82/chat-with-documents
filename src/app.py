@@ -33,50 +33,113 @@ loaders = {".txt": load_txt, ".pdf": load_pdf, ".docx": load_docx, ".odt": load_
 # ============================================================================
 
 
+def is_streamlit_cloud():
+    """Check if running on Streamlit Cloud"""
+    return os.getenv("STREAMLIT_SHARING_MODE") is not None
+
+
+def extract_zip_and_scan(uploaded_zip):
+    """
+    Extract uploaded ZIP file to temporary directory and scan for documents.
+
+    Args:
+        uploaded_zip: Streamlit UploadedFile object containing ZIP data.
+
+    Returns:
+        tuple: (temp_dir_path, list of file paths)
+    """
+    import tempfile
+    import zipfile
+
+    # Create temporary directory
+    temp_dir = tempfile.mkdtemp()
+
+    # Extract ZIP to temp directory
+    with zipfile.ZipFile(uploaded_zip, "r") as zip_ref:
+        zip_ref.extractall(temp_dir)
+
+    # Scan the extracted folder for documents
+    files = scan_folders(temp_dir)
+
+    return temp_dir, files
+
+
 def render_sidebar():
     """
     Render the sidebar with document settings and controls.
 
-    Handles folder path input, displays current folder info, and provides
-    chat history clearing functionality.
+    Handles two modes:
+    - Cloud mode: ZIP file upload for document submission
+    - Local mode: Folder path input for direct filesystem access
+
+    Also provides chat history clearing functionality.
     """
+
     with st.sidebar:
         st.title("📁 Document Settings")
 
-        # Input field for folder path
-        folder_path = st.text_input(
-            "Enter folder path:",
-            placeholder="C:/Users/YourName/Documents or /home/user/docs",
-            help="Enter the full path to your documents folder",
-        )
+        # Cloud mode: Use ZIP upload since filesystem access is restricted
+        if is_streamlit_cloud():
+            uploaded_zip = st.file_uploader(
+                "Upload a ZIP file with your documents:",
+                type=["zip"],
+                help="Upload a ZIP file containing your documents (PDF, TXT, DOCX, ODT)",
+            )
 
-        if st.button("Load Folder", use_container_width=True):
-            if folder_path and os.path.exists(folder_path):
-                st.session_state.folder_path = folder_path
-                # Clear collection to trigger re-indexing
-                if "collection" in st.session_state:
-                    del st.session_state.collection
+            if uploaded_zip is not None:
+                if st.button("Load ZIP", use_container_width=True):
+                    st.session_state.uploaded_zip = uploaded_zip
+                    # Clear collection to trigger re-indexing
+                    if "collection" in st.session_state:
+                        del st.session_state.collection
+                    if "files" in st.session_state:
+                        del st.session_state.files
+                    st.rerun()
+
+            # Show upload status
+            if "uploaded_zip" in st.session_state:
+                st.markdown("---")
+                st.success("📦 **ZIP Uploaded:**")
+                st.code(st.session_state.uploaded_zip.name, language=None)
+
                 if "files" in st.session_state:
-                    del st.session_state.files
-                st.rerun()
-            elif folder_path:
-                st.error("Folder not found. Please check the path.")
+                    st.info(f"📄 **Files Indexed:** {len(st.session_state.files)}")
+        else:
+            # Local mode: Direct folder path access
+            # Input field for folder path
+            folder_path = st.text_input(
+                "Enter folder path:",
+                placeholder="C:/Users/YourName/Documents or /home/user/docs",
+                help="Enter the full path to your documents folder",
+            )
+
+            if st.button("Load Folder", use_container_width=True):
+                if folder_path and os.path.exists(folder_path):
+                    st.session_state.folder_path = folder_path
+                    # Clear collection to trigger re-indexing
+                    if "collection" in st.session_state:
+                        del st.session_state.collection
+                    if "files" in st.session_state:
+                        del st.session_state.files
+                    st.rerun()
+                elif folder_path:
+                    st.error("Folder not found. Please check the path.")
+                    if "files" in st.session_state:
+                        del st.session_state.files
+                    if "folder_path" in st.session_state:
+                        del st.session_state.folder_path
+                else:
+                    st.info("Please enter a folder path")
+
+            # Show current folder if selected
+            if "folder_path" in st.session_state:
+                st.markdown("---")
+                st.success("📂 **Current Folder:**")
+                st.code(st.session_state.folder_path, language=None, wrap_lines=True)
+
+                # Show number of files if available
                 if "files" in st.session_state:
-                    del st.session_state.files
-                if "folder_path" in st.session_state:
-                    del st.session_state.folder_path
-            else:
-                st.info("Please enter a folder path")
-
-        # Show current folder if selected
-        if "folder_path" in st.session_state:
-            st.markdown("---")
-            st.success("📂 **Current Folder:**")
-            st.code(st.session_state.folder_path, language=None, wrap_lines=True)
-
-            # Show number of files if available
-            if "files" in st.session_state:
-                st.info(f"📄 **Files Indexed:** {len(st.session_state.files)}")
+                    st.info(f"📄 **Files Indexed:** {len(st.session_state.files)}")
 
         # Clear chat button
         st.markdown("---")
@@ -188,7 +251,7 @@ st.write(time.strftime("%d %b, %Y"))
 render_sidebar()
 
 if "folder_path" in st.session_state:
-    # Scan the folder for supported document files
+    # Local mode: Scan the folder for supported document files
     files = scan_folders(st.session_state.folder_path)
     if not files:
         if "show_popup" not in st.session_state:
@@ -198,6 +261,14 @@ if "folder_path" in st.session_state:
         st.stop()
 
     st.session_state.files = files
+elif "uploaded_zip" in st.session_state:
+    # Cloud mode: extract ZIP and scan
+    temp_dir, files = extract_zip_and_scan(st.session_state.uploaded_zip)
+    if not files:
+        st.info("No documents found in ZIP")
+        st.stop()
+    st.session_state.files = files
+    st.session_state.temp_dir = temp_dir
 else:
     st.stop()
 
@@ -206,7 +277,13 @@ else:
 # ============================================================================
 
 # Create a vector store collection specific to the selected folder
-initialize_vector_store(st.session_state.folder_path, st.session_state.files)
+# Use ZIP name for cloud, folder path for local
+if is_streamlit_cloud():
+    collection_path = st.session_state.uploaded_zip.name
+else:
+    collection_path = st.session_state.folder_path
+
+initialize_vector_store(collection_path, st.session_state.files)
 
 # ============================================================================
 # Chat Interface and Question Answering
