@@ -26,10 +26,13 @@ def chunk_text(text, file):
 
     chunks = splitter.split_text(text)
 
+    # Normalize path to use forward slashes for cross-platform compatibility
+    normalized_file = file.replace("\\", "/")
+
     docs = [
         Document(
-            page_content=f"[Source: {file}]\n\n{content}",
-            metadata={"source": file, "chunk": index},
+            page_content=f"[Source: {normalized_file}]\n\n{content}",
+            metadata={"source": normalized_file, "chunk": index},
         )
         for index, content in enumerate(chunks)
     ]
@@ -91,7 +94,9 @@ def create_file_index_chunk(files):
         separators=["\n\n", "\n", " ", ""],
     )
 
-    text = "The following files were indexed:\n" + "\n".join(files)
+    # Normalize paths to use forward slashes to avoid escape character issues
+    normalized_files = [file.replace("\\", "/") for file in files]
+    text = "The following files were indexed:\n" + "\n".join(normalized_files)
     chunks = splitter.split_text(text)
 
     docs = [

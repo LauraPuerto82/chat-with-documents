@@ -1,23 +1,28 @@
 # Chat with Documents
 
-An AI-powered application that enables conversational interaction with documents in your local filesystem using natural language queries.
+An AI-powered web application that enables conversational interaction with your documents using natural language queries through an intuitive Streamlit interface.
 
 ## Overview
 
-This application scans documents in a specified directory (and its subdirectories), indexes them using vector embeddings, and allows you to ask questions about the content. The system retrieves relevant information and generates context-aware responses with source citations.
+This application provides a user-friendly web interface to chat with your documents. Select a folder through the built-in file dialog, and the app will automatically index all supported documents. You can then ask questions about the content and receive AI-generated answers based on the document context, with full conversation history support.
 
 ## Features
 
-- **Recursive Document Discovery**: Automatically scans current directory and all subdirectories
+- **Web-Based UI**: Clean, intuitive Streamlit interface with chat functionality
+- **Folder Selection Dialog**: Easy folder browsing using system file picker
+- **Recursive Document Discovery**: Automatically scans selected directory and all subdirectories
 - **Multi-Format Support**: Works with PDF, TXT, DOCX, ODT. Other document formats will be added
+- **Progress Tracking**: Visual progress bar during document indexing
 - **Vector-Based Search**: Uses semantic search to find relevant content
-- **Natural Language Interface**: Ask questions in plain English
+- **Natural Language Interface**: Ask questions in plain English through chat interface
 - **Conversation History**: Maintains context across multiple questions for follow-up queries
+- **Chat Management**: Clear chat history with one click
 - **Source Citations**: Responses include references to source documents
 - **Comprehensive Test Suite**: 47 automated tests with 100% pass rate
 
 ## Technologies Used
 
+- **Frontend**: Streamlit
 - **LLM**: Google Gemini 2.5 Flash
 - **Vector Database**: ChromaDB
 - **Embeddings**: ChromaDB default embeddings
@@ -44,20 +49,31 @@ This application scans documents in a specified directory (and its subdirectorie
 
 ## Usage
 
+### Running the Application
+
+Start the Streamlit web application:
+
+```bash
+streamlit run src/app.py
+```
+
+The application will open in your default web browser at `http://localhost:8501`.
+
+### Using the Interface
+
+1. **Select a Folder**: Click the "Select Folder" button in the sidebar to choose a directory containing your documents
+2. **Wait for Indexing**: The app will automatically scan and index all supported documents (shows progress bar)
+3. **Start Chatting**: Once indexing is complete, type your questions in the chat input at the bottom
+4. **View Responses**: The AI will provide answers based on your documents, including source references
+5. **Continue Conversation**: Ask follow-up questions - the chat maintains full conversation history
+6. **Clear History**: Use the "Clear Chat History" button in the sidebar to start fresh
+
+### CLI Version (Legacy)
+
+A CLI version is also available:
+
 ```bash
 python src/cli.py
-```
-
-Example interaction:
-```
-Enter directory to scan (default: data): data
-Directory used: 'data'
-Oct 07, 2025 14:30:15
-
-Ask a question (or type 'exit' to quit): What are the main topics covered in the documents?
-Based on the documents, the main topics include...
-
-Ask a question (or type 'exit' to quit): exit
 ```
 
 ## Project Structure
@@ -69,7 +85,8 @@ Chat with documents/
 ├── pytest.ini                  # Test configuration
 ├── .env.example               # Environment variables template
 ├── src/                       # Source code
-│   ├── cli.py                # Main CLI application
+│   ├── app.py                # Main Streamlit web application
+│   ├── cli.py                # CLI application (legacy)
 │   ├── document_loader.py    # Document loading functions
 │   ├── scan_folders.py       # Directory scanning
 │   ├── vector_store.py       # Vector database operations
@@ -129,13 +146,15 @@ All tests use pytest fixtures for isolated, repeatable testing with automatic cl
 - Real-time document monitoring and re-indexing
 - Multi-language support
 - Export chat transcripts
-- Web-based UI
 - Support for additional document formats (Markdown, HTML, CSV)
+- Document upload feature (in addition to folder selection)
+- Streaming responses for better UX
 
-## Contributing
+## About
 
-This is a learning project developed as part of the Python and AI Builders community.
+Developed as part of the Python & AI Builders community led by Ardit Sulce, this project explores practical AI integration in document processing and conversational interfaces using modern Python frameworks.
 
 ## License
 
-This project is for educational purposes.
+This project is released under the MIT License.  
+See the [LICENSE](./LICENSE) file for more details.

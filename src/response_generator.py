@@ -95,3 +95,22 @@ def set_history(history, query, answer):
     history.append(AIMessage(answer))
 
     return history
+
+
+def set_langchain_history(messages):
+    """
+    Convert Streamlit message format to LangChain message format.
+
+    Args:
+        messages (list): List of dicts with 'role' and 'content' keys
+
+    Returns:
+        list: List of LangChain HumanMessage and AIMessage objects
+    """
+    langchain_history = []
+    for msg in messages:
+        if msg["role"] == "user":
+            langchain_history.append(HumanMessage(msg["content"]))
+        else:
+            langchain_history.append(AIMessage(msg["content"]))
+    return langchain_history
