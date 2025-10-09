@@ -2,15 +2,24 @@
 
 An AI-powered web application that enables conversational interaction with your documents using natural language queries through an intuitive Streamlit interface.
 
+**🚀 [Try the live demo](https://laurapuerto-chat-with-documents.streamlit.app/)**
+
 ## Overview
 
-This application provides a user-friendly web interface to chat with your documents. Enter a folder path in the sidebar, and the app will automatically index all supported documents. You can then ask questions about the content and receive AI-generated answers based on the document context, with full conversation history support.
+This application provides a user-friendly web interface to chat with your documents. The app supports two deployment modes:
+
+- **Cloud Mode**: Upload a ZIP file containing your documents through the web interface
+- **Local Mode**: Enter a folder path to scan documents from your filesystem
+
+Once indexed, you can ask questions about the content and receive AI-generated answers based on the document context, with full conversation history support.
 
 ## Features
 
+- **Dual Deployment Mode**: Automatic detection of cloud vs local environment
+  - Cloud: ZIP file upload for document submission
+  - Local: Direct folder path access
 - **Web-Based UI**: Clean, intuitive Streamlit interface with chat functionality
-- **Folder Path Input**: Easy folder selection via text input with path validation
-- **Recursive Document Discovery**: Automatically scans selected directory and all subdirectories
+- **Recursive Document Discovery**: Automatically scans directories and subdirectories (including within ZIP files)
 - **Multi-Format Support**: Works with PDF, TXT, DOCX, ODT. Other document formats will be added
 - **Progress Tracking**: Visual progress bar during document indexing
 - **Vector-Based Search**: Uses semantic search to find relevant content
@@ -61,10 +70,21 @@ The application will open in your default web browser at `http://localhost:8501`
 
 ### Using the Interface
 
-1. **Enter Folder Path**: Type or paste the full path to your documents folder in the sidebar text input, then click "Load Folder"
-2. **Wait for Indexing**: The app will automatically scan and index all supported documents (shows progress bar)
-3. **Start Chatting**: Once indexing is complete, type your questions in the chat input at the bottom
-4. **View Responses**: The AI will provide answers based on your documents, including source references
+**For Cloud Deployment (e.g., Streamlit Cloud):**
+
+1. **Upload ZIP**: Create a ZIP file with your documents (maintaining any folder structure), then upload it using the file uploader
+2. **Load ZIP**: Click "Load ZIP" to extract and index the documents
+3. **Start Chatting**: Once indexing is complete, type your questions in the chat input
+4. **View Responses**: The AI provides answers based on your documents with source references
+5. **Continue Conversation**: Ask follow-up questions - the chat maintains full conversation history
+6. **Clear History**: Use the "Clear Chat History" button in the sidebar to start fresh
+
+**For Local Deployment:**
+
+1. **Enter Folder Path**: Type or paste the full path to your documents folder in the sidebar text input
+2. **Load Folder**: Click "Load Folder" to scan and index all documents recursively
+3. **Start Chatting**: Once indexing is complete, type your questions in the chat input
+4. **View Responses**: The AI provides answers based on your documents with source references
 5. **Continue Conversation**: Ask follow-up questions - the chat maintains full conversation history
 6. **Clear History**: Use the "Clear Chat History" button in the sidebar to start fresh
 
@@ -78,7 +98,12 @@ python src/cli.py
 
 ### Cloud Deployment Note
 
-When deployed on cloud platforms (Streamlit Cloud, Heroku, etc.), the indexed documents are stored in ephemeral storage and will be cleared when the app restarts. Users will need to re-enter their folder path and re-index documents each session. This typically takes only a few seconds and is not a significant limitation for most use cases.
+When deployed on cloud platforms (Streamlit Cloud, Heroku, etc.):
+- The app automatically switches to **ZIP upload mode** since filesystem access is restricted
+- Indexed documents are stored in ephemeral storage and will be cleared when the app restarts
+- Users will need to re-upload their ZIP file and re-index documents each session
+- Indexing typically takes only a few seconds and is not a significant limitation for most use cases
+- The ZIP file can contain nested folders - all documents will be discovered recursively
 
 ## Project Structure
 
@@ -151,8 +176,8 @@ All tests use pytest fixtures for isolated, repeatable testing with automatic cl
 - Multi-language support
 - Export chat transcripts
 - Support for additional document formats (Markdown, HTML, CSV)
-- Document upload feature (in addition to folder selection)
 - Streaming responses for better UX
+- Persistent storage for cloud deployments
 
 ## About
 
